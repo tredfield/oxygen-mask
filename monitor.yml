@@ -36,6 +36,7 @@ resources:
   type: git
   source:
     uri: https://github.com/tredfield/oxygen-mask
+    branch: udates-for-sbux
 
 jobs:
 - name: fly-hijack-failing-build
