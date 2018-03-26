@@ -35,7 +35,7 @@ resources:
 - name: oxygen-mask
   type: git
   source:
-    uri: https://github.com/concourse/oxygen-mask
+    uri: https://github.com/tredfield/oxygen-mask
 
 jobs:
 - name: fly-hijack-failing-build
@@ -46,6 +46,7 @@ jobs:
     trigger: true
   - get: fly
     params: {globs: [fly_linux_amd64]}
+    version: {tag: v3.6.0}
   - task: trigger-and-wait-for-a-build
     config:
       image_resource:
@@ -99,6 +100,7 @@ jobs:
     trigger: true
   - get: fly
     params: {globs: [fly_linux_amd64]}
+    version: {tag: v3.6.0}
   - task: trigger-and-wait-for-a-build
     config:
       image_resource:
@@ -147,6 +149,7 @@ jobs:
   - get: oxygen-mask
   - get: fly
     params: {globs: [fly_linux_amd64]}
+    version: {tag: v3.6.0}
   - task: check-pipeline-returns-known-string
     file: oxygen-mask/ci/run.yml
     params:
@@ -169,6 +172,7 @@ jobs:
   - get: fly
     params:
       globs: [fly_linux_amd64]
+    version: {tag: v3.6.0}
   - task: check-build-history-is-viewable
     file: oxygen-mask/ci/run.yml
     params:
@@ -190,6 +194,7 @@ jobs:
   - get: fly
     params:
       globs: [fly_linux_amd64]
+    version: {tag: v3.6.0}
   - get: oxygen-mask
   - task: create-and-run-new-pipeline
     config:
