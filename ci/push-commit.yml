@@ -1,0 +1,21 @@
+---
+platform: linux
+
+image_resource:
+  type: docker-image
+  source:
+    repository: concourse/buildroot
+    tag: git
+
+inputs:
+  - name: oxygen-mask
+
+outputs:
+  - name: pull-request-output
+
+params:
+  GITHUB_PRIVATE_KEY: ((github.private-key))
+  GITHUB_ACCESS_TOKEN: ((github.access-token))
+
+run:
+  path: oxygen-mask/ci/push-commit.sh simple-test pull-request-output

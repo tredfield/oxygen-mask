@@ -1,0 +1,35 @@
+// create a pr commit
+
+resource_types:
+
+- name: pull-request
+  type: docker-image
+  source:
+    repository: jtarchie/pr
+    tag: latest
+
+resources:
+
+- name: pr-simple-test
+  type: pull-request
+  check_every: 3m
+  source:
+    repo: scpprd/simple-test
+    uri: git@github.com:scpprd/simple-test.git
+    base: pr-metric
+    access_token: ((github.access-token))
+    base_url: ((concourse.base-url))
+    private_key: ((github.private-key))
+
+jobs:
+
+- name: measure-pull-request
+  public: true
+  max_in_flight: 1
+  plan:
+
+    // submit a pull-request
+
+    // emit start metric
+
+    // poll for status and emit finish metric

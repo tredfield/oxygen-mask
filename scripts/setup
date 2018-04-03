@@ -49,7 +49,7 @@ fly -t "$MONITORED_TARGET" expose-pipeline -p "$PIPELINE_NAME"
 
 cmd=(fly -t "$MONITORING_TARGET" set-pipeline -n -p "$PIPELINE_NAME"-stats -c $tmpfile \
   -v atc_url="$(fly targets | grep "$MONITORED_TARGET"  | head -n 1 | awk '{print $2}')" \
-  -v interval=30s \
+  -v interval=1m \
   -v password="$PASSWORD" \
   -v pipeline_name="$PIPELINE_NAME" \
   -v team_name="$TEAMNAME" \
