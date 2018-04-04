@@ -3,8 +3,9 @@
 source $(dirname $0)/add-ssh-key.sh
 
 repo=$1
-output=$PWD/$2/pr_result
+output=$PWD/$2
 github_access_token=${GITHUB_ACCESS_TOKEN}
+datadog_api_key=${DATADOG_API_KEY}
 base=pr-metric
 branch=pr-metric-push-branch
 
@@ -24,6 +25,7 @@ git checkout -b ${branch}
 # new_val=$((current_val +1))
 new_val="for measuring pr metric"
 echo $new_val > pr-count-file
+date >> pr-count-file
 
 # push commit to branch
 logInfo "Pushing commit to ${branch}..."
@@ -43,4 +45,12 @@ jq -c -n \
     "body": $body,
     "base": $base,
     "head": $head
-  }' | curl -H "Authorization: token $github_access_token" -d@- "https://api.github.com/repos/scpprd/${repo}/pulls" > ${output}
+  }' | curl -H "Authorization: token $github_access_token" -d@- "https://api.github.com/repos/scpprd/${repo}/pulls" > ${output}/pr_result
+
+# write time
+date > ${output}/pr_start_time
+
+pull_request=$(cat ${output}/pr_result | jq -r '.id')
+host_name=""
+tags=""
+postSeriesMetric "concourse.measure.pull.request.start" $pull_request $host_name $tags

@@ -18,3 +18,19 @@ logWarn() {
 logError() {
   echo -e  "${_RED}${1}${_RESET}"
 }
+
+postSeriesMetric() {
+  metric_name=$1
+  metric_value=$2
+  host_name=$3
+  tag=$4
+  currenttime=$(date +%s)
+
+  logInfo "Posting metric ${metric_name} with value ${metric_value} for host ${host_name} and tags ${tag}"
+  curl -s -X POST -H "Content-type: application/json" \
+  -d "{ \"series\" :
+           [{\"metric\":\"$metric_name\",
+            \"points\":[[$currenttime, $metric_value]]}]
+  }" \
+  "https://api.datadoghq.com/api/v1/series?api_key=$datadog_api_key"
+}

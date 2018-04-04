@@ -10,16 +10,10 @@ image_resource:
 inputs:
   - name: oxygen-mask
 
-outputs:
-  - name: pull-request-output
-
 params:
   GITHUB_PRIVATE_KEY: ((github.private-key))
-  GITHUB_ACCESS_TOKEN: ((github.access-token))
-  DATADOG_AGENT_API_KEY: #((datadog.api-key))
 
 run:
-  path: oxygen-mask/ci/push-commit.sh
+  path: oxygen-mask/ci/clean-up.sh
   args:
     - simple-test
-    - pull-request-output
