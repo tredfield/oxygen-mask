@@ -4,10 +4,10 @@ resources:
   source:
     uri: https://github.com/tredfield/oxygen-mask
 
-- name: 1m
+- name: 5m
   type: time
   source:
-    interval: 1m
+    interval: 5m
 
 jobs:
 

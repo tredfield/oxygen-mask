@@ -48,7 +48,7 @@ jq -c -n \
   }' | curl -H "Authorization: token $github_access_token" -d@- "https://api.github.com/repos/scpprd/${repo}/pulls" > ${output}/pr_result
 
 # write time
-date > ${output}/pr_start_time
+date +%s > ${output}/pr_start_time
 
 pull_request=$(cat ${output}/pr_result | jq -r '.id')
 host_name=""
