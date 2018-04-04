@@ -16,7 +16,7 @@ outputs:
 params:
   GITHUB_PRIVATE_KEY: ((github.private-key))
   GITHUB_ACCESS_TOKEN: ((github.access-token))
-  DATADOG_AGENT_API_KEY: #((datadog.api-key))
+  DATADOG_API_KEY: ((datadog.api_key))
 
 run:
   path: oxygen-mask/ci/push-commit.sh

@@ -1,17 +1,28 @@
-// create a pr commit
+resources:
+- name: oxygen-mask
+  type: git
+  source:
+    uri: https://github.com/tredfield/oxygen-mask
 
-resource_types:
-
+- name: 1m
+  type: time
+  source:
+    interval: 1m
 
 jobs:
 
 - name: measure-pull-request
   public: true
   max_in_flight: 1
+  build_logs_to_retain: 20
+  serial: true
   plan:
-
-    // submit a pull-request
-
-    // emit start metric
-
-    // poll for status and emit finish metric
+    - get: 1m
+      trigger: true
+    - get: oxygen-mask
+    - task: push-pull-request
+      file: oxygen-mask/ci/push-commit.yml
+    - task: get-pr-status-and-emit-metrics
+      file: oxygen-mask/ci/get-pr-status.yml
+    - task: clean-up
+      file: oxygen-mask/ci/clean-up.yml
