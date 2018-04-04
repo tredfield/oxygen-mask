@@ -34,3 +34,23 @@ postSeriesMetric() {
   }" \
   "https://api.datadoghq.com/api/v1/series?api_key=$datadog_api_key"
 }
+
+
+postStatus() {
+  commit_status=$1
+  repo=$2
+  commitsha=$3
+  target_url="http://ci-cfs.use1-cfs-mc.int.scpdev.net:8080/teams/main/pipelines/pull-request-metric/jobs/measure-pull-request/builds/1"
+  description="testing status"
+  jq -c -n \
+    --arg status "$commit_status" \
+    --arg target_url "$target_url" \
+    --arg description "$description" \
+    --arg context "concourse-ci/status" \
+    '{
+      "state": $status,
+      "target_url": $target_url,
+      "description": $description,
+      "context": $context
+    }' | curl -H "Authorization: token $github_access_token" -d@- "https://api.github.com/repos/scpprd/$repo/statuses/$commitsha"
+}

@@ -3,7 +3,7 @@
 source $(dirname $0)/common.sh
 
 github_access_token=$GITHUB_ACCESS_TOKEN
-datadog_api_key=${DATADOG_AGENT_API_KEY}
+datadog_api_key=${DATADOG_API_KEY}
 
 repo=$1
 pull_request_output=$2
