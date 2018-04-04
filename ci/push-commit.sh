@@ -10,7 +10,7 @@ datadog_api_key=${DATADOG_API_KEY}
 # write time
 date_seconds=$(date +%s)
 
-base="pr-metric-${date_seconds}"
+base=develop #"pr-metric-${date_seconds}"
 branch="pr-metric-push-branch-${date_seconds}"
 echo $base > ${output}/pr_base_name
 echo $branch > ${output}/pr_branch_name
@@ -20,9 +20,9 @@ logInfo "Clonging ${repo}..."
 git clone git@github.com:scpprd/${repo}.git
 cd ${repo}
 
-logInfo "Checking out and pushing ${base}..."
-git checkout -b ${base}
-git push --set-upstream origin ${base}
+# logInfo "Checking out and pushing ${base}..."
+# git checkout -b ${base}
+# git push --set-upstream origin ${base}
 
 logInfo "Checking out ${branch}..."
 git checkout -b ${branch}
