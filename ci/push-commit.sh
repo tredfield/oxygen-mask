@@ -6,8 +6,14 @@ repo=$1
 output=$PWD/$2
 github_access_token=${GITHUB_ACCESS_TOKEN}
 datadog_api_key=${DATADOG_API_KEY}
-base=pr-metric
-branch=pr-metric-push-branch
+
+# write time
+date_seconds=$(date +%s)
+
+base="pr-metric-${date_seconds}"
+branch="pr-metric-push-branch-${date_seconds}"
+echo $base > ${output}/pr_base_name
+echo $branch > ${output}/pr_branch_name
 
 # checkout repo and create a base branch and branch for pull-request
 logInfo "Clonging ${repo}..."

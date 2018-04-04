@@ -9,6 +9,7 @@ image_resource:
 
 inputs:
   - name: oxygen-mask
+  - name: pull-request-output
 
 params:
   GITHUB_PRIVATE_KEY: ((github.private-key))
