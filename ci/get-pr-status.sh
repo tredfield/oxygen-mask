@@ -26,7 +26,7 @@ emitConcourseFoundVersion() {
       pr_version_found_time=$(date +%s)
       pr_version_found_duration=$((${pr_version_found_time}-${pr_start_time}))
       logInfo "Concourse found pull request #${pull} in (seconds): ${pr_version_found_duration}"
-      postSeriesMetric "concourse.measure.pull.request.pr.version.found.duration" $pr_version_found_duration $host_name $tags
+      postSeriesMetric "concourse.measure.pull.request.pr.version.found.duration" $pr_version_found_duration
     fi
   fi
 }
@@ -53,7 +53,7 @@ getStatuses() {
   pr_job_start_time=$(date +%s)
   pr_job_start_duration=$((${pr_job_start_time}-${pr_start_time}))
 
-  logInfo "Getting pull request statuses"
+  logInfo "Getting pull request statuses for repository ${repo} and pull request # ${pull}"
   statuses=$(curl -s -H "Authorization: token $github_access_token" $status_href)
   statuses_count=$(echo $statuses | jq -r '. | length')
 
@@ -66,7 +66,7 @@ processStatues() {
 
   # record time spent waiting for PR job to start
   echo "$pr_job_start_time" > ${output}/pr_job_start_time
-  postSeriesMetric "concourse.measure.pull.request.start.duration" $pr_job_start_duration $host_name $tags
+  postSeriesMetric "concourse.measure.pull.request.start.duration" $pr_job_start_duration
 
   while [ "$pr_status" = "pending" ]; do
     # get current status
@@ -117,9 +117,9 @@ emitFinishMetrics() {
   pr_duration=$((${pr_end_time}-${pr_start_time}))
 
   pull_request=$(cat ${pull_request_output}/pr_result | jq -r '.id')
-  postSeriesMetric "concourse.measure.pull.request.end" $pull_request $host_name $tags
-  postSeriesMetric "concourse.measure.pull.request.duration" $pr_duration $host_name $tags
-  postSeriesMetric "concourse.measure.pull.request.success" $pull_request_success $host_name $tags
+  postSeriesMetric "concourse.measure.pull.request.end" $pull_request
+  postSeriesMetric "concourse.measure.pull.request.duration" $pr_duration
+  postSeriesMetric "concourse.measure.pull.request.success" $pull_request_success 
 }
 
 initPullRequest

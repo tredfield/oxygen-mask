@@ -18,6 +18,9 @@ params:
   GITHUB_ACCESS_TOKEN: ((github.access-token))
   DATADOG_API_KEY: ((datadog.api_key))
   RANDOM_BASE:
+  CONCOURSE_TARGET_URL:
+  CONCOURSE_TARGET_TEAM:
+  CONCOURSE_TARGET_PIPELINE:
 
 run:
   path: oxygen-mask/ci/push-commit.sh

@@ -24,5 +24,9 @@ jobs:
       file: oxygen-mask/ci/push-commit.yml
     - task: get-pr-status-and-emit-metrics
       file: oxygen-mask/ci/get-pr-status.yml
+      params:
+        CONCOURSE_TARGET_URL: ((concourse_target_url))
+        CONCOURSE_TARGET_TEAM: ((concourse_target_team))
+        CONCOURSE_TARGET_PIPELINE: ((concourse_target_pipeline))
     - task: clean-up
       file: oxygen-mask/ci/clean-up.yml
