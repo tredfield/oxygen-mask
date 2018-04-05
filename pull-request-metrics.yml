@@ -4,7 +4,7 @@ resources:
   source:
     uri: https://github.com/tredfield/oxygen-mask
 
-- name: 5m
+- name: 15m
   type: time
   source:
     interval: 5m
