@@ -4,10 +4,10 @@ resources:
   source:
     uri: https://github.com/tredfield/oxygen-mask
 
-- name: 15m
+- name: test-interval
   type: time
   source:
-    interval: 5m
+    interval: 15m
 
 jobs:
 
@@ -17,7 +17,7 @@ jobs:
   build_logs_to_retain: 20
   serial: true
   plan:
-    - get: 1m
+    - get: test-interval
       trigger: true
     - get: oxygen-mask
     - task: push-pull-request
