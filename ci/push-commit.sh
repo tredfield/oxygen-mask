@@ -40,7 +40,7 @@ git commit -am"commit for measuring pr time"
 git push --set-upstream origin ${branch}
 
 # create pull-request
-logInfo "Creating pull-request"
+logInfo "Creating pull-request..."
 jq -c -n \
   --arg title "For measuring pull-request time" \
   --arg body "For measuring pull-request time" \
@@ -60,3 +60,6 @@ pull_request=$(cat ${output}/pr_result | jq -r '.id')
 host_name=""
 tags=""
 postSeriesMetric "concourse.measure.pull.request.start" $pull_request $host_name $tags
+
+pr_url=$(cat ${output}/pr_result | jq -r '.url')
+logInfo "Created pull request ${pr_url}"

@@ -11,6 +11,6 @@ logInfo "Cloning ${repo}..."
 git clone git@github.com:scpprd/${repo}.git
 cd ${repo}
 
-logInfo "Deleting remote branches ${branch}, ${base}..."
+logInfo "Deleting remote branch ${branch}..."
 git push origin --delete ${branch}
-git push origin --delete ${base}
+# git push origin --delete ${base}
