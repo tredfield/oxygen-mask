@@ -52,6 +52,7 @@ while [ $statuses_count = 0 ]; do
       if [ "$pr_status" = "pending" ]; then
         logError "Waiting on pending status. Sleeping ${_sleep} seconds"
         sleep ${_sleep}
+        statuses=$(curl -s -H "Authorization: token $github_access_token" $status_href)
       fi
     done
   fi
