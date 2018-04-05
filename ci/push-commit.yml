@@ -17,9 +17,11 @@ params:
   GITHUB_PRIVATE_KEY: ((github.private-key))
   GITHUB_ACCESS_TOKEN: ((github.access-token))
   DATADOG_API_KEY: ((datadog.api_key))
+  RANDOM_BASE:
 
 run:
   path: oxygen-mask/ci/push-commit.sh
   args:
     - simple-test
+    - pr-metrics-base
     - pull-request-output

@@ -13,6 +13,7 @@ inputs:
 
 params:
   GITHUB_PRIVATE_KEY: ((github.private-key))
+  RANDOM_BASE:
 
 run:
   path: oxygen-mask/ci/clean-up.sh

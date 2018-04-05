@@ -8,8 +8,12 @@ datadog_api_key=${DATADOG_API_KEY}
 repo=$1
 pull_request_output=$2
 output=$PWD/$3
+_sleep=10
+host_name=""
+tags=""
 
-_sleep=5
+# get the time the pr was created
+pr_start_time=$(cat $pull_request_output/pr_start_time)
 
 #get the PR pull number
 pull=$(cat $pull_request_output/pr_result | jq -r '.number')
@@ -33,6 +37,12 @@ while [ $statuses_count = 0 ]; do
   # proceed if statuses exist
   if [ $statuses_count != "0" ]; then
     pr_status="pending"
+
+    # calculate time waiting for concourse job to start and post metric
+    pr_job_start_time=$(date +%s)
+    echo "$pr_job_start_time" > ${output}/pr_job_start_time
+    pr_job_start_duration=$((${pr_job_start_time}-${pr_start_time}))
+    postSeriesMetric "concourse.measure.pull.request.start.duration" $pr_job_start_duration $host_name $tags
 
     while [ "$pr_status" = "pending" ]; do
       # get current status
@@ -70,8 +80,6 @@ pr_start_time=$(cat $pull_request_output/pr_start_time)
 pr_duration=$((${pr_end_time}-${pr_start_time}))
 
 pull_request=$(cat ${pull_request_output}/pr_result | jq -r '.id')
-host_name=""
-tags=""
 postSeriesMetric "concourse.measure.pull.request.end" $pull_request $host_name $tags
 postSeriesMetric "concourse.measure.pull.request.duration" $pr_duration $host_name $tags
 postSeriesMetric "concourse.measure.pull.request.success" $pull_request_success $host_name $tags

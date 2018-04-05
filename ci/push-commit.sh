@@ -3,26 +3,27 @@
 source $(dirname $0)/add-ssh-key.sh
 
 repo=$1
-output=$PWD/$2
+base=$2
+output=$PWD/$3
 github_access_token=${GITHUB_ACCESS_TOKEN}
 datadog_api_key=${DATADOG_API_KEY}
 
 # write time
 date_seconds=$(date +%s)
 
-base=pr-metrics-base #"pr-metric-${date_seconds}"
 branch="pr-metric-push-branch-${date_seconds}"
-echo $base > ${output}/pr_base_name
-echo $branch > ${output}/pr_branch_name
 
 # checkout repo and create a base branch and branch for pull-request
 logInfo "Clonging ${repo}..."
 git clone git@github.com:scpprd/${repo}.git
 cd ${repo}
 
-# logInfo "Checking out and pushing ${base}..."
-# git checkout -b ${base}
-# git push --set-upstream origin ${base}
+if [ "$RANDOM_BASE" = "true" ]; then
+  base="$base-$date_seconds"
+  logInfo "Checking out and pushing ${base}..."
+  git checkout -b ${base}
+  git push --set-upstream origin ${base}
+fi
 
 logInfo "Checking out ${branch}..."
 git checkout -b ${branch}
@@ -53,6 +54,7 @@ jq -c -n \
     "head": $head
   }' | curl -H "Authorization: token $github_access_token" -d@- "https://api.github.com/repos/scpprd/${repo}/pulls" > ${output}/pr_result
 
+
 # write time
 date +%s > ${output}/pr_start_time
 
@@ -61,5 +63,10 @@ host_name=""
 tags=""
 postSeriesMetric "concourse.measure.pull.request.start" $pull_request $host_name $tags
 
-pr_url=$(cat ${output}/pr_result | jq -r '.url')
+pr_url=$(cat ${output}/pr_result | jq -r '.html_url')
+echo ""
 logInfo "Created pull request ${pr_url}"
+
+# write output
+echo $base > ${output}/pr_base_name
+echo $branch > ${output}/pr_branch_name
