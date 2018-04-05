@@ -28,20 +28,23 @@ statuses_count=0
 pull_request_success=0
 
 while [ $statuses_count = 0 ]; do
+  # calculate time waiting for concourse job to start and post metric
+  pr_job_start_time=$(date +%s)
+  pr_job_start_duration=$((${pr_job_start_time}-${pr_start_time}))
+
   logInfo "Getting pull request statuses"
   statuses=$(curl -s -H "Authorization: token $github_access_token" $status_href)
   statuses_count=$(echo $statuses | jq -r '. | length')
 
   logInfo "Statuses count: ${statuses_count}"
+  logInfo "Current wait time (seconds): $pr_job_start_duration"
 
   # proceed if statuses exist
   if [ $statuses_count != "0" ]; then
     pr_status="pending"
 
-    # calculate time waiting for concourse job to start and post metric
-    pr_job_start_time=$(date +%s)
+    # record time spent waiting for PR job to start
     echo "$pr_job_start_time" > ${output}/pr_job_start_time
-    pr_job_start_duration=$((${pr_job_start_time}-${pr_start_time}))
     postSeriesMetric "concourse.measure.pull.request.start.duration" $pr_job_start_duration $host_name $tags
 
     while [ "$pr_status" = "pending" ]; do
