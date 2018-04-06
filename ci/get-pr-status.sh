@@ -10,10 +10,12 @@ pull_request_output=$1
 output=$PWD/$2
 _sleep=10
 time_pending=0
+concourse_pr_found="false"
 
 emitConcourseFoundVersion() {
-  if [ -z "$concourse_pr_found" ]; then
+  if [ "$concourse_pr_found" = "false" ]; then
     # get concourse versions and see if has PR
+    logInfo "Checking concourse for pull-request version #${pull} for pipeline ${build_pipeline} and repo ${repo}"
     versions=$(curl -s ${host_name}/api/v1/teams/${team}/pipelines/${build_pipeline}/resources/pr-${repo}/versions)
     pr_version=$(echo $versions | jq  --arg pull "$pull" '.[] | select(.version.pr == $pull) | .version.pr')
 
@@ -25,6 +27,8 @@ emitConcourseFoundVersion() {
       postSeriesMetric "concourse.measure.pull.request.pr.version.found.duration" $pr_version_found_duration
     fi
   fi
+
+  logInfo "Concourse found version: ${concourse_pr_found}"
 }
 
 initPullRequest() {
