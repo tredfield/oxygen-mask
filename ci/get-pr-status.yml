@@ -21,7 +21,7 @@ params:
   CONCOURSE_TARGET_TEAM:
   CONCOURSE_TARGET_PIPELINE:
   REPO:
-  # necessary if the repo name in manifest is different than actual repository name
+  # can be same value as REPO if manifest REPO is not named differently
   MANIFEST_REPO:
   TESTING_METRICS:
 

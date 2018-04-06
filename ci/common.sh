@@ -12,7 +12,7 @@ host_name=${CONCOURSE_TARGET_URL}
 team=${CONCOURSE_TARGET_TEAM}
 build_pipeline=${CONCOURSE_TARGET_PIPELINE}
 repo=${REPO}
-tags="\"team:${team}\", \"pipeline:${build_pipeline}\""
+tags="\"team:${team}\", \"pipeline:${build_pipeline}\", \"repo:${repo}\""
 
 logInfo() {
   echo -e "${_GREEN}${1}${_RESET}"

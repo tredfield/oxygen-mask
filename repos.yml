@@ -1,5 +1,6 @@
 repos:
   - name: simple-test
+    manifestRepoName: simple-test
     team: develop
     pipeline: build-develop-ucp-loyalty
     baseBranch: pr-metrics-base
