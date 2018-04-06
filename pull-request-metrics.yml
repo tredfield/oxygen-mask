@@ -4,37 +4,45 @@ resources:
   source:
     uri: https://github.com/tredfield/oxygen-mask
 
-- name: test-interval
+- name: ((check_interval))
   type: time
   source:
-    interval: 15m
+    interval: ((check_interval))
 
 jobs:
 
-- name: measure-pull-request
+{{ range .repos }}
+- name: measure-pull-request-{{ .pipeline }}-{{ .name }}
   public: true
   max_in_flight: 1
   build_logs_to_retain: 20
   serial: true
   plan:
-    - get: test-interval
+    - get: ((check_interval))
       trigger: true
     - get: oxygen-mask
     - task: push-pull-request
       file: oxygen-mask/ci/push-commit.yml
       params:
         CONCOURSE_TARGET_URL: ((concourse_target_url))
-        CONCOURSE_TARGET_TEAM: ((concourse_target_team))
-        CONCOURSE_TARGET_PIPELINE: ((concourse_target_pipeline))
+        CONCOURSE_TARGET_TEAM: {{ .team }}
+        CONCOURSE_TARGET_PIPELINE: {{ .pipeline }}
+        REPO: {{ .name }}
+        METRICS_BASE: {{ .baseBranch }}        
     - task: get-pr-status-and-emit-metrics
       file: oxygen-mask/ci/get-pr-status.yml
       params:
         CONCOURSE_TARGET_URL: ((concourse_target_url))
-        CONCOURSE_TARGET_TEAM: ((concourse_target_team))
-        CONCOURSE_TARGET_PIPELINE: ((concourse_target_pipeline))
+        CONCOURSE_TARGET_TEAM: {{ .team }}
+        CONCOURSE_TARGET_PIPELINE: {{ .pipeline }}
+        REPO: {{ .name }}
+        METRICS_BASE: {{ .baseBranch }}
     - task: clean-up
       file: oxygen-mask/ci/clean-up.yml
       params:
         CONCOURSE_TARGET_URL: ((concourse_target_url))
-        CONCOURSE_TARGET_TEAM: ((concourse_target_team))
-        CONCOURSE_TARGET_PIPELINE: ((concourse_target_pipeline))
+        CONCOURSE_TARGET_TEAM: {{ .team }}
+        CONCOURSE_TARGET_PIPELINE: {{ .pipeline }}
+        REPO: {{ .name }}
+        METRICS_BASE: {{ .baseBranch }}
+{{ end }}

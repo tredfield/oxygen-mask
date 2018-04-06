@@ -20,11 +20,11 @@ params:
   CONCOURSE_TARGET_URL:
   CONCOURSE_TARGET_TEAM:
   CONCOURSE_TARGET_PIPELINE:
+  REPO:
   TESTING_METRICS:
 
 run:
   path: oxygen-mask/ci/get-pr-status.sh
   args:
-    - simple-test
     - pull-request-output
     - pull-request-result

@@ -11,6 +11,7 @@ declare -r _RESET='\033[0m'
 host_name=${CONCOURSE_TARGET_URL}
 team=${CONCOURSE_TARGET_TEAM}
 build_pipeline=${CONCOURSE_TARGET_PIPELINE}
+repo=${REPO}
 tags="\"team:${team}\", \"pipeline:${build_pipeline}\""
 
 logInfo() {
@@ -42,10 +43,7 @@ postSeriesMetric() {
              [{\"metric\":\"$metric_name\",
               \"points\":[[$currenttime, $metric_value]],
               \"host\":\"${host_name}\",
-              \"tags\":[${tags}]
-              }
-             ]
-    }" \
+              \"tags\":[${tags}]}]}" \
     "https://api.datadoghq.com/api/v1/series?api_key=$datadog_api_key"
   fi
 }

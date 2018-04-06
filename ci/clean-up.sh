@@ -2,7 +2,7 @@
 
 source $(dirname $0)/add-ssh-key.sh
 
-repo=$1
+repo=${REPO}
 base=$(cat pull-request-output/pr_base_name)
 branch=$(cat pull-request-output/pr_branch_name)
 

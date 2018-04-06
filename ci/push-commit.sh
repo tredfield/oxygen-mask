@@ -2,9 +2,9 @@
 
 source $(dirname $0)/add-ssh-key.sh
 
-repo=$1
-base=$2
-output=$PWD/$3
+output=$PWD/$1
+repo=${REPO}
+base=${METRICS_BASE}
 github_access_token=${GITHUB_ACCESS_TOKEN}
 datadog_api_key=${DATADOG_API_KEY}
 
@@ -21,6 +21,11 @@ cloneRepoAndGetBranches() {
 
   if [ "$RANDOM_BASE" = "true" ]; then
     base="$base-$date_seconds"
+  fi
+
+  base_found=$(git branch -r | grep ${base})
+
+  if [ -z "${base_found}" ]; then
     logInfo "Checking out and pushing ${base}..."
     git checkout -b ${base}
     git push --set-upstream origin ${base}

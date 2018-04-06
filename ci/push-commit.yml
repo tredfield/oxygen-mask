@@ -17,15 +17,15 @@ params:
   GITHUB_PRIVATE_KEY: ((github.private-key))
   GITHUB_ACCESS_TOKEN: ((github.access-token))
   DATADOG_API_KEY: ((datadog.api_key))
+  METRICS_BASE: pr-metrics-base
   RANDOM_BASE:
+  REPO:
   CONCOURSE_TARGET_URL:
   CONCOURSE_TARGET_TEAM:
   CONCOURSE_TARGET_PIPELINE:
   TESTING_METRICS:
-    
+
 run:
   path: oxygen-mask/ci/push-commit.sh
   args:
-    - simple-test
-    - pr-metrics-base
     - pull-request-output
