@@ -20,6 +20,7 @@ params:
   CONCOURSE_TARGET_URL:
   CONCOURSE_TARGET_TEAM:
   CONCOURSE_TARGET_PIPELINE:
+  TESTING_METRICS:
 
 run:
   path: oxygen-mask/ci/get-pr-status.sh

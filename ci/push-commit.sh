@@ -65,8 +65,6 @@ writeOutput() {
   date +%s > ${output}/pr_start_time
 
   pull_request=$(cat ${output}/pr_result | jq -r '.id')
-  host_name=""
-  tags=""
   postSeriesMetric "concourse.measure.pull.request.start" $pull_request
 
   pr_url=$(cat ${output}/pr_result | jq -r '.html_url')

@@ -4,21 +4,16 @@ source $(dirname $0)/common.sh
 
 github_access_token=${GITHUB_ACCESS_TOKEN}
 datadog_api_key=${DATADOG_API_KEY}
-atc_url=${CONCOURSE_TARGET_URL}
-team=${CONCOURSE_TARGET_TEAM}
-build_pipeline=${CONCOURSE_TARGET_PIPELINE}
 
 repo=$1
 pull_request_output=$2
 output=$PWD/$3
 _sleep=10
-host_name="${atc_url}"
-tags=""
 
 emitConcourseFoundVersion() {
   if [ -z "$concourse_pr_found" ]; then
     # get concourse versions and see if has PR
-    versions=$(curl -s ${atc_url}/api/v1/teams/${team}/pipelines/${build_pipeline}/resources/pr-${repo}/versions)
+    versions=$(curl -s ${host_name}/api/v1/teams/${team}/pipelines/${build_pipeline}/resources/pr-${repo}/versions)
     pr_version=$(echo $versions | jq  --arg pull "$pull" '.[] | select(.version.pr == $pull) | .version.pr')
 
     if [ -n "$pr_version" ]; then
@@ -119,7 +114,7 @@ emitFinishMetrics() {
   pull_request=$(cat ${pull_request_output}/pr_result | jq -r '.id')
   postSeriesMetric "concourse.measure.pull.request.end" $pull_request
   postSeriesMetric "concourse.measure.pull.request.duration" $pr_duration
-  postSeriesMetric "concourse.measure.pull.request.success" $pull_request_success 
+  postSeriesMetric "concourse.measure.pull.request.success" $pull_request_success
 }
 
 initPullRequest
