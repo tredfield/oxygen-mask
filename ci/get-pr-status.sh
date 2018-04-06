@@ -67,8 +67,10 @@ processStatues() {
   while [ "$pr_status" = "pending" ]; do
     # get current status
     pr_status=$(echo $statuses | jq -r '[.[] | select(.context | contains("concourse-ci/status"))][0].state')
-
     logInfo "Current status: ${pr_status}"
+
+    # emit metric when concourse finds version
+    emitConcourseFoundVersion
 
     if [ "$pr_status" = "success" ]; then
       logInfo "PR Success!"
@@ -97,8 +99,6 @@ pollStatus() {
     if [ $statuses_count != "0" ]; then
       processStatues
     fi
-
-    emitConcourseFoundVersion
 
     # still waiting for statues?
     if [ $statuses_count = 0 ]; then
