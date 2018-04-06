@@ -1,0 +1,11 @@
+repos:
+  - name: simple-test
+    team: develop
+    pipeline: build-develop-ucp-loyalty
+    baseBranch: pr-metrics-base
+    interval: 15m
+  - name: udp-orchestra
+    team: udp
+    pipeline: build-master-udp-orchestra
+    baseBranch: master
+    interval: 15m
