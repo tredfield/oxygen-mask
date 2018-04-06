@@ -9,6 +9,7 @@ repo=$1
 pull_request_output=$2
 output=$PWD/$3
 _sleep=10
+time_pending=0
 
 emitConcourseFoundVersion() {
   if [ -z "$concourse_pr_found" ]; then
@@ -82,6 +83,8 @@ processStatues() {
       logError "Waiting on pending status. Sleeping ${_sleep} seconds"
       sleep ${_sleep}
       statuses=$(curl -s -H "Authorization: token $github_access_token" $status_href)
+      time_pending=$((${_sleep}+${time_pending}))
+      logWarn "Pull request job pending for ${time_pending} (seconds)"
     fi
   done
 }
@@ -115,6 +118,7 @@ emitFinishMetrics() {
   postSeriesMetric "concourse.measure.pull.request.end" $pull_request
   postSeriesMetric "concourse.measure.pull.request.duration" $pr_duration
   postSeriesMetric "concourse.measure.pull.request.success" $pull_request_success
+  postSeriesMetric "concourse.measure.pull.request.pending.duration" $time_pending
 }
 
 initPullRequest
