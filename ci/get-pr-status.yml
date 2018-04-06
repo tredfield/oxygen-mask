@@ -21,6 +21,8 @@ params:
   CONCOURSE_TARGET_TEAM:
   CONCOURSE_TARGET_PIPELINE:
   REPO:
+  # necessary if the repo name in manifest is different than actual repository name
+  MANIFEST_REPO:
   TESTING_METRICS:
 
 run:

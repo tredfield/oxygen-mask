@@ -6,6 +6,7 @@ github_access_token=${GITHUB_ACCESS_TOKEN}
 datadog_api_key=${DATADOG_API_KEY}
 
 repo=${REPO}
+manifest_repo="${MANIFEST_REPO:-$repo}"
 pull_request_output=$1
 output=$PWD/$2
 _sleep=10

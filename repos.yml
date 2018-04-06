@@ -5,6 +5,7 @@ repos:
     baseBranch: pr-metrics-base
     interval: 15m
   - name: udp-orchestra
+    manifestRepoName: orchestra
     team: udp
     pipeline: build-master-udp-orchestra
     baseBranch: master

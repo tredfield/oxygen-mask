@@ -38,6 +38,7 @@ jobs:
         CONCOURSE_TARGET_TEAM: {{ .team }}
         CONCOURSE_TARGET_PIPELINE: {{ .pipeline }}
         REPO: {{ .name }}
+        MANIFEST_REPO: {{ .manifestRepoName }}       
         METRICS_BASE: {{ .baseBranch }}
     - task: clean-up
       file: oxygen-mask/ci/clean-up.yml
