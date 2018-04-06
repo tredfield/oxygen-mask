@@ -2,8 +2,6 @@
 
 source $(dirname $0)/common.sh
 
-set -e
-
 export GIT_SSL_NO_VERIFY=true
 export TMPDIR=${TMPDIR:-/tmp}
 

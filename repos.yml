@@ -3,11 +3,11 @@ repos:
     manifestRepoName: simple-test
     team: develop
     pipeline: build-develop-ucp-loyalty
-    baseBranch: pr-metrics-base
+    baseBranch: ucp-metrics-base
     interval: 15m
-  - name: udp-orchestra
-    manifestRepoName: orchestra
+  - name: simple-test
+    manifestRepoName: simple-test
     team: udp
     pipeline: build-master-udp-orchestra
-    baseBranch: master
+    baseBranch: udp-metrics-base
     interval: 15m
