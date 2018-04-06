@@ -25,13 +25,17 @@ logError() {
   echo -e  "${_RED}${1}${_RESET}"
 }
 
+logWarn "Targeting concourse instance: ${host_name} \
+\nTeam: ${team} \
+\nPipeline: ${build_pipeline}"
+
 postSeriesMetric() {
   metric_name=$1
   metric_value=$2
 
   currenttime=$(date +%s)
 
-  logInfo "Posting metric ${metric_name} with value ${metric_value} for host ${host_name} and tags ${tags}"
+  logInfo "Posting metric ${metric_name} with value ${metric_value}"
   if [ -z "$TESTING_METRICS" ]; then
     curl -s -X POST -H "Content-type: application/json" \
     -d "{ \"series\" :
