@@ -16,15 +16,15 @@ concourse_pr_found="false"
 emitConcourseFoundVersion() {
   if [ "$concourse_pr_found" = "false" ]; then
     # get concourse versions and see if has PR
-    logInfo "Checking concourse for pull-request version #${pull} for pipeline ${build_pipeline} and repo ${repo}"
-    versions=$(curl -s ${host_name}/api/v1/teams/${team}/pipelines/${build_pipeline}/resources/pr-${repo}/versions)
+    logInfo "Checking concourse for pull-request version #${pull} for pipeline ${build_pipeline} and repo ${manifest_repo}"
+    versions=$(curl -s ${host_name}/api/v1/teams/${team}/pipelines/${build_pipeline}/resources/pr-${manifest_repo}/versions)
     pr_version=$(echo $versions | jq  --arg pull "$pull" '.[] | select(.version.pr == $pull) | .version.pr')
 
     if [ -n "$pr_version" ]; then
       concourse_pr_found="true"
       pr_version_found_time=$(date +%s)
       pr_version_found_duration=$((${pr_version_found_time}-${pr_start_time}))
-      logInfo "Concourse found pull request #${pull} in (seconds): ${pr_version_found_duration}"
+      logWarn "Concourse found pull request #${pull} in (seconds): ${pr_version_found_duration}"
       postSeriesMetric "concourse.measure.pull.request.pr.version.found.duration" $pr_version_found_duration
     fi
   fi
