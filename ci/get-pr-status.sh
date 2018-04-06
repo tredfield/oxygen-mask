@@ -92,12 +92,13 @@ processStatues() {
 pollStatus() {
   while [ $statuses_count = 0 ]; do
     getStatuses
-    emitConcourseFoundVersion
 
     # proceed if statuses exist
     if [ $statuses_count != "0" ]; then
       processStatues
     fi
+
+    emitConcourseFoundVersion
 
     # still waiting for statues?
     if [ $statuses_count = 0 ]; then
