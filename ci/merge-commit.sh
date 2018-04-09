@@ -9,6 +9,12 @@ github_access_token=${GITHUB_ACCESS_TOKEN}
 datadog_api_key=${DATADOG_API_KEY}
 versions=
 
+wait_time() {
+  current_time=$(date +%s)
+  wait_time=$((${current_time}-${merge_start_time}))
+  echo "$wait_time"
+}
+
 cloneRepoAndMergePrBranchToBase() {
   branch=$(cat $pull_request_output/pr_branch_name)
   base=$(cat $pull_request_output/pr_base_name)
@@ -35,10 +41,9 @@ getVersions() {
   version_id=$(echo $versions | jq -r --arg commit "$commit" '.[] | select(.version.ref == $commit) | .id')
 
   if [ -n "$version_id" ]; then
-    merge_version_found_time=$(date +%s)
-    merge_version_found_duration=$((${merge_version_found_time}-${merge_start_time}))
-    logWarn "Concourse found merge commit ${commit} in (seconds): ${merge_version_found_duration}"
-    postSeriesMetric "concourse.measure.merge.version.found.duration" $merge_version_found_duration
+    waiting=$(wait_time)
+    logWarn "Concourse found merge commit ${commit} in (seconds): ${waiting}"
+    postSeriesMetric "concourse.measure.merge.version.found.duration" ${waiting}
   fi
 }
 
@@ -53,7 +58,8 @@ pollVersions() {
 
     # still waiting for version?
     if [ -z "$version_id" ]; then
-      logWarn "No merge version found. Sleeping ${_sleep} seconds"
+      waiting=$(wait_time)
+      logWarn "No merge version found. Sleeping ${_sleep} seconds. Total waiting time (seconds): ${waiting}"
       sleep ${_sleep}
     fi
   done
@@ -70,21 +76,22 @@ pollBuildStatus() {
       logInfo "Status count: $statuses_count"
 
       if [ $statuses_count = 0 ]; then
-        logWarn "No statues. Sleeping ${_sleep} seconds"
+        waiting=$(wait_time)
+        logWarn "No statues. Sleeping ${_sleep} seconds. Total waiting time (seconds): ${waiting}"
         sleep ${_sleep}
       else
         build_status=$(echo $version_input_to | jq -r '.[0].status')
 
         # still waiting for status?
         if [[ ("${build_status}" == "pending" || "${build_status}" == "started") ]]; then
-          logWarn "Status is ${build_status}. Sleeping ${_sleep} seconds"
+          waiting=$(wait_time)
+          logWarn "Status is ${build_status}. Sleeping ${_sleep} seconds. Total waiting time (seconds): ${waiting}"
           sleep ${_sleep}
         else
-          build_complete=$(date +%s)
-          merge_to_build_finish=$((${build_complete}-${merge_start_time}))
+          waiting=$(wait_time)
           logInfo "Build done with status: ${build_status}"
-          logInfo "Build processed in ${merge_to_build_finish} (seconds)"
-          postSeriesMetric "concourse.measure.merge.build.duration" $merge_to_build_finish
+          logInfo "Build processed in ${waiting} (seconds)"
+          postSeriesMetric "concourse.measure.merge.build.duration" ${waiting}
         fi
       fi
     done
