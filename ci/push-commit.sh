@@ -29,6 +29,8 @@ cloneRepoAndGetBranches() {
     logInfo "Checking out and pushing ${base}..."
     git checkout -b ${base}
     git push --set-upstream origin ${base}
+  else
+    git checkout ${base}
   fi
 
   logInfo "Checking out ${branch}..."
