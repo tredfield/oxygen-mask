@@ -40,6 +40,7 @@ jobs:
         REPO: {{ .name }}
         MANIFEST_REPO: {{ .manifestRepoName }}
         METRICS_BASE: {{ .baseBranch }}
+    # merge PR, measure time to do build
     - task: merge-commit
       file: oxygen-mask/ci/merge-commit.yml
       params:
@@ -47,10 +48,8 @@ jobs:
         CONCOURSE_TARGET_TEAM: {{ .team }}
         CONCOURSE_TARGET_PIPELINE: {{ .pipeline }}
         REPO: {{ .name }}
-        MANIFEST_REPO: {{ .manifestRepoName }}       
+        MANIFEST_REPO: {{ .manifestRepoName }}
         METRICS_BASE: {{ .baseBranch }}
-    # merge PR
-    # measure time to do build
     - task: clean-up
       file: oxygen-mask/ci/clean-up.yml
       params:
