@@ -62,7 +62,7 @@ pollVersions() {
 pollBuildStatus() {
     build_status="pending"
 
-    while [ "${build_status}" = "pending" ]; do
+    while [[ ("${build_status}" == "pending" || "${build_status}" == "started") ]]; do
       logInfo "Checking build status for commit ${commit} for pipeline ${build_pipeline} and repo ${manifest_repo}"
       version_input_to=$(curl -s ${host_name}/api/v1/teams/${team}/pipelines/${build_pipeline}/resources/git-${manifest_repo}/versions/${version_id}/input_to)
       statuses_count=$(echo $version_input_to | jq -r '. | length')
@@ -77,7 +77,7 @@ pollBuildStatus() {
 
         # still waiting for status?
         if [[ ("${build_status}" == "pending" || "${build_status}" == "started") ]]; then
-          logWarn "Status is pending. Sleeping ${_sleep} seconds"
+          logWarn "Status is ${build_status}. Sleeping ${_sleep} seconds"
           sleep ${_sleep}
         else
           build_complete=$(date +%s)
