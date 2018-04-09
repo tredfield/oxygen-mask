@@ -1,0 +1,33 @@
+---
+platform: linux
+
+image_resource:
+  type: docker-image
+  source:
+    repository: concourse/buildroot
+    tag: git
+
+inputs:
+  - name: oxygen-mask
+  - name: pull-request-output
+
+outputs:
+  - name: merge-output
+
+params:
+  GITHUB_PRIVATE_KEY: ((github.private-key))
+  GITHUB_ACCESS_TOKEN: ((github.access-token))
+  DATADOG_API_KEY: ((datadog.api_key))
+  CONCOURSE_TARGET_URL:
+  CONCOURSE_TARGET_TEAM:
+  CONCOURSE_TARGET_PIPELINE:
+  REPO:
+  # can be same value as REPO if manifest REPO is not named differently
+  MANIFEST_REPO:
+  TESTING_METRICS:
+
+run:
+  path: oxygen-mask/ci/merge-commit.sh
+  args:
+    - merge-output
+    - pull-request-output
