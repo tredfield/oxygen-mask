@@ -76,7 +76,7 @@ pollBuildStatus() {
         build_status=$(echo $version_input_to | jq -r '.[0].status')
 
         # still waiting for status?
-        if [[ "${build_status}" = "pending" || "${build_status}" = "started" ]; then
+        if [[ ("${build_status}" == "pending" || "${build_status}" == "started") ]]; then
           logWarn "Status is pending. Sleeping ${_sleep} seconds"
           sleep ${_sleep}
         else
