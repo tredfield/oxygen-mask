@@ -65,18 +65,27 @@ pollBuildStatus() {
     while [ "${build_status}" = "pending" ]; do
       logInfo "Checking build status for commit ${commit} for pipeline ${build_pipeline} and repo ${manifest_repo}"
       version_input_to=$(curl -s ${host_name}/api/v1/teams/${team}/pipelines/${build_pipeline}/resources/git-${manifest_repo}/versions/${version_id}/input_to)
-      build_status=$(echo $version_input_to | jq -r '.[0].status')
+      statuses_count=$(echo $version_input_to | jq -r '. | length')
 
-      # still waiting for status?
-      if [ "${build_status}" = "pending" ]; then
-        logWarn "Status is pending. Sleeping ${_sleep} seconds"
+      logInfo "Status count: $statuses_count"
+
+      if [ $statuses_count = 0 ]; then
+        logWarn "No statues. Sleeping ${_sleep} seconds"
         sleep ${_sleep}
       else
-        build_complete=$(date +%s)
-        merge_to_build_finish=$((${build_complete}-${merge_start_time}))
-        logInfo "Build done with status: ${build_status}"
-        logInfo "Build processed in ${merge_to_build_finish} (seconds)"
-        postSeriesMetric "concourse.measure.merge.build.duration" $merge_to_build_finish
+        build_status=$(echo $version_input_to | jq -r '.[0].status')
+
+        # still waiting for status?
+        if [ "${build_status}" = "pending" ]; then
+          logWarn "Status is pending. Sleeping ${_sleep} seconds"
+          sleep ${_sleep}
+        else
+          build_complete=$(date +%s)
+          merge_to_build_finish=$((${build_complete}-${merge_start_time}))
+          logInfo "Build done with status: ${build_status}"
+          logInfo "Build processed in ${merge_to_build_finish} (seconds)"
+          postSeriesMetric "concourse.measure.merge.build.duration" $merge_to_build_finish
+        fi
       fi
     done
 }
