@@ -74,7 +74,7 @@ jobs:
         METRICS_BASE: {{ .baseBranch }}
     # merge PR, measure time to do build
     - task: emit-build-metrics
-      file: oxygen-mask/ci/merge-commit.yml
+      file: oxygen-mask/ci/emit-build-metrics.yml
       params:
         CONCOURSE_TARGET_URL: ((concourse_target_url))
         CONCOURSE_TARGET_TEAM: {{ .team }}
