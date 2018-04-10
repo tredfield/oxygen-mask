@@ -65,6 +65,14 @@ pollVersions() {
   done
 }
 
+emitBuildStarted() {
+  if [[ ("${build_status}" == "started" && -z "${start_emitted}") ]]; then
+    waiting=$(wait_time)
+    postSeriesMetric "concourse.measure.merge.build.started.duration" ${waiting}
+    start_emitted="true"
+  fi
+}
+
 pollBuildStatus() {
     build_status="pending"
 
@@ -81,6 +89,9 @@ pollBuildStatus() {
         sleep ${_sleep}
       else
         build_status=$(echo $version_input_to | jq -r '.[0].status')
+
+        # post metric for duration to start build
+        emitBuildStarted
 
         # still waiting for status?
         if [[ ("${build_status}" == "pending" || "${build_status}" == "started") ]]; then
