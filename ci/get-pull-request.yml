@@ -15,6 +15,7 @@ outputs:
 
 params:
   GITHUB_ACCESS_TOKEN: ((github.access-token))
+  REPO:
 
 run:
   path: bash
@@ -22,6 +23,6 @@ run:
     - -c
     - |
       #!/bin/bash
-      set -x
-      pr_url=$(cat pull-request/.git/url)
-      curl -s -H "Authorization: token $GITHUB_ACCESS_TOKEN" ${pr_url} > pull-request-output/pr_result
+      repo=${REPO}
+      pr_number=$(cat pull-request/.git/id)
+      curl -s -H "Authorization: token $GITHUB_ACCESS_TOKEN" "https://api.github.com/repos/scpprd/${repo}/pulls/${pr_number}" > pull-request-output/pr_result

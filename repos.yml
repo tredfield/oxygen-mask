@@ -5,9 +5,11 @@ repos:
     pipeline: build-develop-ucp-loyalty
     baseBranch: ucp-metrics-base
     interval: 15m
+    pushPullRequest: "false"
   - name: simple-test
     manifestRepoName: simple-test
     team: udp
     pipeline: build-master-udp-orchestra
     baseBranch: udp-metrics-base
     interval: 15m
+    pushPullRequest: "false"

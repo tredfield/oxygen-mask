@@ -13,12 +13,13 @@ resources:
     uri: https://github.com/tredfield/oxygen-mask
 
 {{ range .repos }}
+  {{ if eq .pushPullRequest "true" }}
 - name: {{ .interval }}-{{ .pipeline }}-{{ .name }}
   type: time
   source:
     interval: {{ .interval }}
-  {{ if not .pushPullRequest }}
-- name: pr-{{.name}}
+  {{ else }}
+- name: pr-{{ .pipeline }}-{{ .name }}
   type: pull-request
   check_every: 1m
   source:
@@ -41,7 +42,7 @@ jobs:
   serial: true
   plan:
     - get: oxygen-mask
-  {{ if .pushPullRequest }}
+  {{ if eq .pushPullRequest "true" }}
     - get: {{ .interval }}-{{ .pipeline }}-{{ .name }}
       trigger: true
     - task: push-pull-request
@@ -53,12 +54,14 @@ jobs:
         REPO: {{ .name }}
         METRICS_BASE: {{ .baseBranch }}
   {{ else }}
-    - get: pr-{{ .name }}
+    - get: pr-{{ .pipeline }}-{{ .name }}
       trigger: true
     - task: get-pull-request
       file: oxygen-mask/ci/get-pull-request.yml
       input_mapping:
-        pull-request: pr-{{ .name }}
+        pull-request: pr-{{ .pipeline }}-{{ .name }}
+      params:
+        REPO: {{ .name }}
   {{ end }}
     - task: get-pr-status-and-emit-metrics
       file: oxygen-mask/ci/get-pr-status.yml
@@ -80,7 +83,7 @@ jobs:
         MANIFEST_REPO: {{ .manifestRepoName }}
         METRICS_BASE: {{ .baseBranch }}
         DO_MERGE: {{ .pushPullRequest }}
-  {{ if .pushPullRequest }}
+  {{ if eq .pushPullRequest "true" }}
     - task: clean-up
       file: oxygen-mask/ci/clean-up.yml
       params:
