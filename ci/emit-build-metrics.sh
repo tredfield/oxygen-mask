@@ -4,9 +4,9 @@ source $(dirname $0)/add-ssh-key.sh
 
 output=$PWD/$1
 pull_request_output=$2
-repo=${REPO}
 github_access_token=${GITHUB_ACCESS_TOKEN}
 datadog_api_key=${DATADOG_API_KEY}
+do_merge=${DO_MERGE}
 versions=
 
 wait_time() {
@@ -16,23 +16,25 @@ wait_time() {
 }
 
 cloneRepoAndMergePrBranchToBase() {
-  branch=$(cat $pull_request_output/pr_branch_name)
-  base=$(cat $pull_request_output/pr_base_name)
+  if [[ "${do_merge}" == "true" ]]; then
+    branch=$(cat $pull_request_output/pr_branch_name)
+    base=$(cat $pull_request_output/pr_base_name)
 
-  # checkout repo and create a base branch and branch for pull-request
-  logInfo "Cloning ${repo}..."
-  git clone git@github.com:scpprd/${repo}.git
-  cd ${repo}
+    # checkout repo and create a base branch and branch for pull-request
+    logInfo "Cloning ${repo}..."
+    git clone git@github.com:scpprd/${repo}.git
+    cd ${repo}
 
-  logInfo "Checking out ${base}..."
-  git checkout ${base}
-  git merge origin/${branch}
-  git push
+    logInfo "Checking out ${base}..."
+    git checkout ${base}
+    git merge origin/${branch}
+    git push
 
-  # save commit`and time
-  merge_start_time=$(date +%s)
-  commit=$(git rev-parse HEAD)
-  echo ${commit} > ${output}/commit_sha
+    # save commit`and time
+    merge_start_time=$(date +%s)
+    commit=$(git rev-parse HEAD)
+    echo ${commit} > ${output}/commit_sha
+  fi
 }
 
 getVersions() {

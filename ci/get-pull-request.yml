@@ -1,0 +1,27 @@
+---
+platform: linux
+
+image_resource:
+  type: docker-image
+  source:
+    repository: concourse/buildroot
+    tag: git
+
+inputs:
+  - name: pull-request
+
+outputs:
+  - name: pull-request-output
+
+params:
+  GITHUB_ACCESS_TOKEN: ((github.access-token))
+
+run:
+  path: bash
+  args:
+    - -c
+    - |
+      #!/bin/bash
+      set -x
+      pr_url=$(cat pull-request/.git/url)
+      curl -s -H "Authorization: token $GITHUB_ACCESS_TOKEN" ${pr_url} > pull-request-output/pr_result

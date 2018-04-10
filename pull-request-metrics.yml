@@ -1,3 +1,11 @@
+resource_types:
+- name: pull-request
+  type: docker-image
+  source:
+    repository: jtarchie/pr
+    tag: latest
+
+
 resources:
 - name: oxygen-mask
   type: git
@@ -9,6 +17,18 @@ resources:
   type: time
   source:
     interval: {{ .interval }}
+  {{ if not .pushPullRequest }}
+- name: pr-{{.name}}
+  type: pull-request
+  check_every: 1m
+  source:
+    repo: scpprd/{{ .name }}
+    uri: git@github.com:scpprd/{{ .name }}.git
+    base: {{ .baseBranch }}
+    access_token: ((github.access-token))
+    private_key: ((github.private-key))
+    base_url: ((concourse.base-url))
+  {{ end }}
 {{ end }}
 
 jobs:
@@ -20,9 +40,10 @@ jobs:
   build_logs_to_retain: 20
   serial: true
   plan:
+    - get: oxygen-mask
+  {{ if .pushPullRequest }}
     - get: {{ .interval }}-{{ .pipeline }}-{{ .name }}
       trigger: true
-    - get: oxygen-mask
     - task: push-pull-request
       file: oxygen-mask/ci/push-commit.yml
       params:
@@ -31,6 +52,14 @@ jobs:
         CONCOURSE_TARGET_PIPELINE: {{ .pipeline }}
         REPO: {{ .name }}
         METRICS_BASE: {{ .baseBranch }}
+  {{ else }}
+    - get: pr-{{ .name }}
+      trigger: true
+    - task: get-pull-request
+      file: oxygen-mask/ci/get-pull-request.yml
+      input_mapping:
+        pull-request: pr-{{ .name }}
+  {{ end }}
     - task: get-pr-status-and-emit-metrics
       file: oxygen-mask/ci/get-pr-status.yml
       params:
@@ -41,7 +70,7 @@ jobs:
         MANIFEST_REPO: {{ .manifestRepoName }}
         METRICS_BASE: {{ .baseBranch }}
     # merge PR, measure time to do build
-    - task: merge-commit
+    - task: emit-build-metrics
       file: oxygen-mask/ci/merge-commit.yml
       params:
         CONCOURSE_TARGET_URL: ((concourse_target_url))
@@ -50,6 +79,8 @@ jobs:
         REPO: {{ .name }}
         MANIFEST_REPO: {{ .manifestRepoName }}
         METRICS_BASE: {{ .baseBranch }}
+        DO_MERGE: {{ .pushPullRequest }}
+  {{ if .pushPullRequest }}
     - task: clean-up
       file: oxygen-mask/ci/clean-up.yml
       params:
@@ -58,4 +89,5 @@ jobs:
         CONCOURSE_TARGET_PIPELINE: {{ .pipeline }}
         REPO: {{ .name }}
         METRICS_BASE: {{ .baseBranch }}
+  {{ end }}
 {{ end }}

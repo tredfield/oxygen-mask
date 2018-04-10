@@ -5,11 +5,8 @@ source $(dirname $0)/common.sh
 github_access_token=${GITHUB_ACCESS_TOKEN}
 datadog_api_key=${DATADOG_API_KEY}
 
-repo=${REPO}
-manifest_repo="${MANIFEST_REPO:-$repo}"
 pull_request_output=$1
 output=$PWD/$2
-_sleep=10
 time_pending=0
 concourse_pr_found="false"
 
@@ -32,11 +29,18 @@ emitConcourseFoundVersion() {
   logInfo "Concourse found version: ${concourse_pr_found}"
 }
 
+getPrStartTime() {
+    #pr_start_time=$(cat $pull_request_output/pr_start_time)
+    create_at=$(cat $pull_request_output/pr_result | jq -r '.created_at')
+    create_at=$(echo "${create_at}" | sed 's/T/ /' | sed 's/Z//')
+    echo $(date --utc --date="$create_at" +"%s")
+}
+
 initPullRequest() {
   # get the time the pr was created
-  pr_start_time=$(cat $pull_request_output/pr_start_time)
+  pr_start_time=$(getPrStartTime)
 
-  #get the PR pull number
+  # get the PR pull number
   pull=$(cat $pull_request_output/pr_result | jq -r '.number')
 
   # get the pull request
@@ -117,7 +121,6 @@ emitFinishMetrics() {
   # write time in seconds
   date +%s > ${output}/pr_end_time
   pr_end_time=$(cat ${output}/pr_end_time)
-  pr_start_time=$(cat $pull_request_output/pr_start_time)
   pr_duration=$((${pr_end_time}-${pr_start_time}))
 
   pull_request=$(cat ${pull_request_output}/pr_result | jq -r '.id')
