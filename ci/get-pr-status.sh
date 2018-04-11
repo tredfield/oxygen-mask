@@ -3,7 +3,6 @@
 source $(dirname $0)/common.sh
 
 github_access_token=${GITHUB_ACCESS_TOKEN}
-datadog_api_key=${DATADOG_API_KEY}
 
 pull_request_output=$1
 output=$PWD/$2
@@ -31,9 +30,9 @@ emitConcourseFoundVersion() {
 
 getPrStartTime() {
     #pr_start_time=$(cat $pull_request_output/pr_start_time)
-    create_at=$(cat $pull_request_output/pr_result | jq -r '.created_at')
-    create_at=$(echo "${create_at}" | sed 's/T/ /' | sed 's/Z//')
-    echo $(date --utc --date="$create_at" +"%s")
+    updated_at=$(cat $pull_request_output/pr_result | jq -r '.updated_at')
+    updated_at=$(echo "${updated_at}" | sed 's/T/ /' | sed 's/Z//')
+    echo $(date --utc --date="$updated_at" +"%s")
 }
 
 initPullRequest() {
