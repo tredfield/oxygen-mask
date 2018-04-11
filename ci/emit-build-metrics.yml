@@ -9,7 +9,6 @@ image_resource:
 
 inputs:
   - name: oxygen-mask
-  - name: pull-request-output
   - name: git-repo
 
 outputs:
@@ -26,10 +25,8 @@ params:
   # can be same value as REPO if manifest REPO is not named differently
   MANIFEST_REPO:
   TESTING_METRICS:
-  DO_MERGE:
 
 run:
   path: oxygen-mask/ci/emit-build-metrics.sh
   args:
     - merge-output
-    - pull-request-output
