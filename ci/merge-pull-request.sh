@@ -6,8 +6,8 @@ do_merge=${DO_MERGE}
 
 cloneRepoAndMergePrBranchToBase() {
   if [[ "${do_merge}" == "true" ]]; then
-    branch=$(cat $pull_request_output/pr_branch_name)
-    base=$(cat $pull_request_output/pr_base_name)
+    branch=$(cat pull-request-output/pr_branch_name)
+    base=$(cat pull-request-output/pr_base_name)
 
     # checkout repo and create a base branch and branch for pull-request
     logInfo "Cloning ${repo}..."
