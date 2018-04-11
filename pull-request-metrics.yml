@@ -80,11 +80,21 @@ jobs:
         REPO: {{ .name }}
         MANIFEST_REPO: {{ .manifestRepoName }}
         METRICS_BASE: {{ .baseBranch }}
+  {{ if eq .pushPullRequest "true" }}
     - task: merge-pull-request
       file: oxygen-mask/ci/merge-pull-request.yml
       params:
         REPO: {{ .name }}
         DO_MERGE: {{ .pushPullRequest }}
+    - task: clean-up
+      file: oxygen-mask/ci/clean-up.yml
+      params:
+        CONCOURSE_TARGET_URL: ((concourse_target_url))
+        CONCOURSE_TARGET_TEAM: {{ .team }}
+        CONCOURSE_TARGET_PIPELINE: {{ .pipeline }}
+        REPO: {{ .name }}
+        METRICS_BASE: {{ .baseBranch }}
+  {{ end }}
 
 - name: measure-build-{{ .pipeline }}-{{ .name }}
   public: true
@@ -106,15 +116,4 @@ jobs:
         METRICS_BASE: {{ .baseBranch }}
       input_mapping:
         git-repo: git-{{ .pipeline }}-{{ .name }}
-  {{ if eq .pushPullRequest "true" }}
-    - task: clean-up
-      file: oxygen-mask/ci/clean-up.yml
-      params:
-        CONCOURSE_TARGET_URL: ((concourse_target_url))
-        CONCOURSE_TARGET_TEAM: {{ .team }}
-        CONCOURSE_TARGET_PIPELINE: {{ .pipeline }}
-        REPO: {{ .name }}
-        METRICS_BASE: {{ .baseBranch }}
-  {{ end }}
-
 {{ end }}

@@ -39,13 +39,8 @@ initPullRequest() {
   # get the time the pr was created
   pr_start_time=$(getPrStartTime)
 
-  # get the PR pull number
-  pull=$(cat $pull_request_output/pr_result | jq -r '.number')
-
-  # get the pull request
-  logInfo "Getting pull request for repository ${repo} and pull request # ${pull}"
-  pr=$(curl -s -H "Authorization: token $github_access_token" https://api.github.com/repos/scpprd/$repo/pulls/$pull)
-  status_href=$(echo $pr|jq  -r '._links.statuses.href')
+  # get the status ref
+  status_href=$($pull_request_output/pr_result | jq  -r '._links.statuses.href')
 
   # get statues and check count
   statuses_count=0

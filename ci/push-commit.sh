@@ -19,10 +19,6 @@ cloneRepoAndGetBranches() {
   git clone git@github.com:scpprd/${repo}.git
   cd ${repo}
 
-  if [ "$RANDOM_BASE" = "true" ]; then
-    base="$base-$date_seconds"
-  fi
-
   base_found=$(git branch -r | grep ${base})
 
   if [ -z "${base_found}" ]; then

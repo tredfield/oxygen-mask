@@ -18,7 +18,6 @@ params:
   GITHUB_ACCESS_TOKEN: ((github.access-token))
   DATADOG_API_KEY: ((datadog.api_key))
   METRICS_BASE: pr-metrics-base
-  RANDOM_BASE:
   REPO:
   CONCOURSE_TARGET_URL:
   CONCOURSE_TARGET_TEAM:

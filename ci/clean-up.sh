@@ -13,7 +13,3 @@ cd ${repo}
 
 logInfo "Deleting remote branch ${branch}..."
 git push origin --delete ${branch}
-
-if [ "$RANDOM_BASE" = "true" ]; then
-  git push origin --delete ${base}
-fi
