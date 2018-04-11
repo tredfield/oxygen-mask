@@ -40,7 +40,7 @@ initPullRequest() {
   pr_start_time=$(getPrStartTime)
 
   # get the status ref
-  status_href=$($pull_request_output/pr_result | jq  -r '._links.statuses.href')
+  status_href=$(cat $pull_request_output/pr_result | jq  -r '._links.statuses.href')
 
   # get statues and check count
   statuses_count=0
