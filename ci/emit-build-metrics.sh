@@ -93,6 +93,5 @@ pollBuildStatus() {
 
 # main app
 cd git-repo
-cloneRepoAndMergePrBranchToBase
 getMergeCommit
 pollVersions

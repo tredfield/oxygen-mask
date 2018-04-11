@@ -15,8 +15,6 @@ outputs:
   - name: merge-output
 
 params:
-  GITHUB_PRIVATE_KEY: ((github.private-key))
-  GITHUB_ACCESS_TOKEN: ((github.access-token))
   DATADOG_API_KEY: ((datadog.api_key))
   CONCOURSE_TARGET_URL:
   CONCOURSE_TARGET_TEAM:

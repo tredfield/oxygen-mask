@@ -8,13 +8,14 @@ declare -r _BLUE='\033[1;34m'
 declare -r _RESET='\033[0m'
 
 # params from tasks/pipeline
+datadog_api_key=${DATADOG_API_KEY}
 host_name=${CONCOURSE_TARGET_URL}
 team=${CONCOURSE_TARGET_TEAM}
 build_pipeline=${CONCOURSE_TARGET_PIPELINE}
 repo=${REPO}
 manifest_repo="${MANIFEST_REPO:-$repo}"
 tags="\"team:${team}\", \"pipeline:${build_pipeline}\", \"repo:${repo}\""
-_sleep=10
+_sleep=30
 
 
 logInfo() {
