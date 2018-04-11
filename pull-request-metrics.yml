@@ -33,7 +33,7 @@ resources:
 
 - name: git-{{ .pipeline }}-{{ .name }}
   type: git
-  check_every: 2m
+  check_every: 1m
   source:
     uri: git@github.com:scpprd/{{ .name }}.git
     branch: {{ .baseBranch }}
