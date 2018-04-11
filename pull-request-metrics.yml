@@ -30,6 +30,14 @@ resources:
     private_key: ((github.private-key))
     base_url: ((concourse.base-url))
   {{ end }}
+
+- name: git-{{ .pipeline }}-{{ .name }}
+  type: git
+  check_every: 2m
+  source:
+    uri: git@github.com:scpprd/{{ .name }}.git
+    branch: {{ .baseBranch }}
+    private_key: ((github.private-key))
 {{ end }}
 
 jobs:
@@ -72,7 +80,21 @@ jobs:
         REPO: {{ .name }}
         MANIFEST_REPO: {{ .manifestRepoName }}
         METRICS_BASE: {{ .baseBranch }}
-    # merge PR, measure time to do build
+    - task: merge-pull-request
+      file: oxygen-mask/ci/merge-pull-request.yml
+      params:
+        REPO: {{ .name }}
+        DO_MERGE: {{ .pushPullRequest }}
+
+- name: measure-build-{{ .pipeline }}-{{ .name }}
+  public: true
+  max_in_flight: 1
+  build_logs_to_retain: 20
+  serial: true
+  plan:
+    - get: oxygen-mask
+    - get: git-{{ .pipeline }}-{{ .name }}
+      trigger: true
     - task: emit-build-metrics
       file: oxygen-mask/ci/emit-build-metrics.yml
       params:
@@ -82,7 +104,8 @@ jobs:
         REPO: {{ .name }}
         MANIFEST_REPO: {{ .manifestRepoName }}
         METRICS_BASE: {{ .baseBranch }}
-        DO_MERGE: {{ .pushPullRequest }}
+      input_mapping:
+        git-repo: git-{{ .pipeline }}-{{ .name }}
   {{ if eq .pushPullRequest "true" }}
     - task: clean-up
       file: oxygen-mask/ci/clean-up.yml
@@ -93,4 +116,5 @@ jobs:
         REPO: {{ .name }}
         METRICS_BASE: {{ .baseBranch }}
   {{ end }}
+
 {{ end }}

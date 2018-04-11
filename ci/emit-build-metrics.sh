@@ -3,66 +3,18 @@
 source $(dirname $0)/add-ssh-key.sh
 
 output=$PWD/$1
-pull_request_output=$2
-github_access_token=${GITHUB_ACCESS_TOKEN}
-datadog_api_key=${DATADOG_API_KEY}
-do_merge=${DO_MERGE}
 versions=
 
 getMergeCommit() {
-  pr_number=$(cat ${pull_request_output}/pr_result | jq -r '.number')
-  logInfo "Attempting to get merge commit from pull-request https://github.com/scpprd/${repo}/pull/${pr_number}"
-  merged="false"
-
-  while [ "${merged}" = "false" ]; do
-    pull_request=$(curl -s -H "Authorization: token $GITHUB_ACCESS_TOKEN" "https://api.github.com/repos/scpprd/${repo}/pulls/${pr_number}")
-    merged=$(echo ${pull_request} | jq -r '.merged')
-
-    if [ "${merged}" = "false" ]; then
-      logWarn "Merge commit not found. Sleeping 1 minute"
-      sleep 60
-    else
-      merge_commit_sha=$(echo ${pull_request} | jq -r '.merge_commit_sha')
-      logWarn "Merge commit ${merge_commit_sha} found..."
-      merged_at=$(echo $pull_request | jq -r '.merged_at')
-      merged_at=$(echo "${merged_at}" | sed 's/T/ /' | sed 's/Z//')
-      merged_at=$(date --utc --date="$merged_at" +"%s")
-    fi
-  done
-}
-
-getMergeTime() {
-  create_at=$(cat $pull_request_output/pr_result | jq -r '.merged_at')
-  create_at=$(echo "${create_at}" | sed 's/T/ /' | sed 's/Z//')
-  echo $(date --utc --date="$create_at" +"%s")
+  merge_commit_sha=$(git rev-parse HEAD)
+  merged_at=$(git show -s --format=%ct ${commit_sha})
+  echo ${merge_commit_sha} > ${output}/commit_sha
 }
 
 wait_time() {
   current_time=$(date +%s)
   wait_time=$((${current_time}-${merged_at}))
   echo "$wait_time"
-}
-
-cloneRepoAndMergePrBranchToBase() {
-  if [[ "${do_merge}" == "true" ]]; then
-    branch=$(cat $pull_request_output/pr_branch_name)
-    base=$(cat $pull_request_output/pr_base_name)
-
-    # checkout repo and create a base branch and branch for pull-request
-    logInfo "Cloning ${repo}..."
-    git clone git@github.com:scpprd/${repo}.git
-    cd ${repo}
-
-    logInfo "Checking out ${base}..."
-    git checkout ${base}
-    git merge origin/${branch}
-    git push
-
-    # save commit`and time
-    merged_at=$(date +%s)
-    merge_commit_sha=$(git rev-parse HEAD)
-    echo ${merge_commit_sha} > ${output}/commit_sha
-  fi
 }
 
 getVersions() {
@@ -140,6 +92,7 @@ pollBuildStatus() {
 
 
 # main app
+cd git-repo
 cloneRepoAndMergePrBranchToBase
 getMergeCommit
 pollVersions

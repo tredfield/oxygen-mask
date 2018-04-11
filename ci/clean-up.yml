@@ -14,10 +14,8 @@ inputs:
 params:
   GITHUB_PRIVATE_KEY: ((github.private-key))
   RANDOM_BASE:
-  TESTING_METRICS:
   REPO:
 
 run:
   path: oxygen-mask/ci/clean-up.sh
   args:
-    - simple-test
