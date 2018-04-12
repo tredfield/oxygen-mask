@@ -12,15 +12,15 @@ concourse_pr_found="false"
 emitConcourseFoundVersion() {
   if [ "$concourse_pr_found" = "false" ]; then
     # get concourse versions and see if has PR
-    logInfo "Checking concourse for pull-request version #${pull} for pipeline ${build_pipeline} and repo ${manifest_repo}"
+    logInfo "Checking concourse for pull-request version #${pull_number} for pipeline ${build_pipeline} and repo ${manifest_repo}"
     versions=$(curl -s ${host_name}/api/v1/teams/${team}/pipelines/${build_pipeline}/resources/pr-${manifest_repo}/versions)
-    pr_version=$(echo $versions | jq  --arg pull "$pull" '.[] | select(.version.pr == $pull) | .version.pr')
+    pr_version=$(echo $versions | jq  --arg pull "${pull_number}" '.[] | select(.version.pr == $pull) | .version.pr')
 
     if [ -n "$pr_version" ]; then
       concourse_pr_found="true"
       pr_version_found_time=$(date +%s)
       pr_version_found_duration=$((${pr_version_found_time}-${pr_start_time}))
-      logWarn "Concourse found pull request #${pull} in (seconds): ${pr_version_found_duration}"
+      logWarn "Concourse found pull request #${pull_number} in (seconds): ${pr_version_found_duration}"
       postSeriesMetric "concourse.measure.pull.request.pr.version.found.duration" $pr_version_found_duration
     fi
   fi
@@ -41,6 +41,7 @@ initPullRequest() {
 
   # get the status ref
   status_href=$(cat $pull_request_output/pr_result | jq  -r '._links.statuses.href')
+  pull_number=$(cat $pull_request_output/pr_result | jq  -r '.number')
 
   # get statues and check count
   statuses_count=0
@@ -52,7 +53,7 @@ getStatuses() {
   pr_job_start_time=$(date +%s)
   pr_job_start_duration=$((${pr_job_start_time}-${pr_start_time}))
 
-  logInfo "Getting pull request statuses for repository ${repo} and pull request # ${pull}"
+  logInfo "Getting pull request statuses for repository ${repo} and pull request # ${pull_number}"
   statuses=$(curl -s -H "Authorization: token $github_access_token" $status_href)
   statuses_count=$(echo $statuses | jq -r '. | length')
 
